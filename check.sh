@@ -1,6 +1,7 @@
 #!/bin/ash
 
 cd /opt
+mkdir /data
 . ./scripts/lib/comun.sh
 
 tmp_file=`mktemp`

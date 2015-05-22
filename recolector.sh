@@ -1,5 +1,6 @@
 #!/bin/ash 
-cd /opt
+exit
+	cd /opt
 
 . /opt/scripts/lib/comun.sh
 tmp_file=`mktemp`
