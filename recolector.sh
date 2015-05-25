@@ -1,17 +1,16 @@
 #!/bin/ash 
-exit
-	cd /opt
+
+cd /opt
 
 . /opt/scripts/lib/comun.sh
 tmp_file=`mktemp`
-ls $data_dir > $tmp_file
+ls $data_dir >> $tmp_file
+buffer=""
 
 for i in $(cat $tmp_file); do 
-	scp -i /etc/dropbear/dropbear_rsa_host_key "$data_dir/$i" $server_user@$server:$server_dir
+        cat /data/$i  | /usr/bin/python /opt/carbon.py -H $server -p 2003 --tcp 
 	if [ $? = 0 ]; then 
 		rm "$data_dir/$i"
-        else
-		   exit
 	fi
 done
 
