@@ -15,6 +15,5 @@ else
   value=$min
 fi
 
-echo $value
 echo "$base_metrics.$check_name $value $time_stamp" > $file_export
 
