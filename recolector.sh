@@ -8,9 +8,10 @@ ls $data_dir >> $tmp_file
 buffer=""
 
 for i in $(cat $tmp_file); do 
-        cat /data/$i  | /usr/bin/python /opt/carbon.py -H $server -p 2003 --tcp 
+#        cat /data/$i  | /usr/bin/python /opt/carbon.py -H $server -p 2003 --tcp 
+        cat /data/$i | nc $server 2003
 	if [ $? = 0 ]; then 
-		rm "$data_dir/$i"
+	   rm "$data_dir/$i"
 	fi
 done
 

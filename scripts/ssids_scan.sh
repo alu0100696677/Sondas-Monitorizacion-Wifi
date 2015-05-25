@@ -1,15 +1,41 @@
 #!/bin/ash 
 
-. ./lib/comun.sh
+. /opt/scripts/lib/comun.sh
 
-date=$(sonda_date)
-file_ssids="${data_dir}/${sondaid}_ssids_${date}.txt"
 
-ifconfig wlan0 up
-echo ""  >> $file_ssids
-grafana_timestamp >> $file_ssids
-iw dev wlan0 scan | egrep "SSID|signal|^BSS|primary channel" >> $file_ssids
 
-file_snr="${data_dir}/${sondaid}_snr_${date}.txt"
-grafana_timestamp >> $file_snr
-iwinfo wlan0 assoclist | grep SNR >> $file_snr
+check_name="ssid_scan"
+
+iw wlan0 scan > /tmp/out
+
+file_export="${data_dir}/${sondaid}_${check_name}_${date}.txt"
+
+
+data=""
+for i in `seq 1 13`; do
+     value=`grep "DS Parameter set: channel $i" /tmp/out | wc -l`
+     if [ -z "$data" ]; then
+         data="$base_metrics.$check_name.channel$i $value $time_stamp" 
+     else
+         data="${data}\n$base_metrics.$check_name.channel$i $value $time_stamp"
+     fi
+done
+
+echo -e $data >> $file_export
+
+
+ssid_check (){
+  check_name="canal_$1"
+  aux=`grep -A 2 "SID: $1$" /tmp/out | grep "DS Parameter set: channel" | sed -e "s/.* channel \([0-9]*\)/\1/"`
+  for i in $aux; do
+    echo "$base_metrics.$check_name$i $i $time_stamp" >> $file_export
+  done
+
+}
+
+
+ssid_check "eduroam"
+ssid_check "ULL"
+ssid_check "ULL-CONECTA"
+
+
